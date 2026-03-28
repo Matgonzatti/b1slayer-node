@@ -186,4 +186,43 @@ describe("ServiceLayerClient", () => {
     expect(getIndex).toBeGreaterThan(postIndex);
     expect(patchIndex).toBeGreaterThan(getIndex);
   });
+
+  it("treats numeric string ids as numeric entities", async () => {
+    const calls: string[] = [];
+
+    const mockFetch: typeof fetch = async (input) => {
+      const url = String(input);
+      calls.push(url);
+
+      if (url.endsWith("/Login")) {
+        return new Response(
+          JSON.stringify({ SessionId: "session-id", Version: "10", SessionTimeout: 30 }),
+          {
+            status: 200,
+            headers: {
+              "content-type": "application/json"
+            }
+          }
+        );
+      }
+
+      return new Response(JSON.stringify({ DocEntry: 123 }), {
+        status: 200,
+        headers: { "content-type": "application/json" }
+      });
+    };
+
+    const client = new ServiceLayerClient({
+      baseUrl: "https://sapserver:50000/b1s/v2",
+      companyDB: "SBODEMO",
+      userName: "manager",
+      password: "12345",
+      fetch: mockFetch
+    });
+
+    await client.request("Orders", "123").get<{ DocEntry: number }>();
+
+    const requestCall = calls.find((url) => url.includes("/Orders("));
+    expect(requestCall).toContain("/Orders(123)");
+  });
 });

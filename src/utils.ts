@@ -18,11 +18,33 @@ export function buildEntityPath(resource: string, id?: unknown): string {
   }
 
   if (typeof id === "string") {
+    if (isNumericEntityId(id)) {
+      return `${resource}(${id.trim()})`;
+    }
+
     const escaped = id.replace(/'/g, "''");
     return `${resource}('${escaped}')`;
   }
 
   return `${resource}(${String(id)})`;
+}
+
+function isNumericEntityId(value: string): boolean {
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return false;
+  }
+
+  if (!/^-?(0|[1-9]\d*)(\.\d+)?$/.test(trimmed)) {
+    return false;
+  }
+
+  const unsigned = trimmed.startsWith("-") ? trimmed.slice(1) : trimmed;
+  if (unsigned.length > 1 && unsigned.startsWith("0") && !unsigned.startsWith("0.")) {
+    return false;
+  }
+
+  return true;
 }
 
 export function parseInlineCount(value: unknown): number {
