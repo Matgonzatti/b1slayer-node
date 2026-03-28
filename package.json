@@ -1,0 +1,66 @@
+{
+  "name": "b1slayer-node",
+  "version": "0.1.0",
+  "description": "A lightweight SAP Business One Service Layer client for Node.js and TypeScript",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format esm,cjs --dts --sourcemap --clean",
+    "prepare": "npm run build",
+    "clean": "rm -rf dist",
+    "ci": "npm run typecheck && npm test && npm run build",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run ci"
+  },
+  "keywords": [
+    "sap",
+    "business-one",
+    "service-layer",
+    "odata",
+    "typescript"
+  ],
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/your-org/b1slayer-node.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-org/b1slayer-node/issues"
+  },
+  "homepage": "https://github.com/your-org/b1slayer-node#readme",
+  "dependencies": {
+    "fetch-cookie": "^3.2.0",
+    "tough-cookie": "^6.0.1",
+    "undici": "^7.24.6"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.2"
+  }
+}
