@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises";
 import { basename } from "node:path";
-import fetchCookie from "fetch-cookie";
+import fetchCookieImport from "fetch-cookie";
 import { CookieJar } from "tough-cookie";
 import { Agent } from "undici";
 import { ServiceLayerError } from "./error.js";
@@ -21,6 +21,11 @@ import {
   sanitizeBaseUrl,
   sleep
 } from "./utils.js";
+
+const fetchCookie =
+  typeof fetchCookieImport === "function"
+    ? fetchCookieImport
+    : ((fetchCookieImport as unknown as { default?: typeof fetchCookieImport }).default as typeof fetchCookieImport);
 
 interface ExecuteOptions {
   headers?: Headers;
