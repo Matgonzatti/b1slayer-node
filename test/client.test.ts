@@ -225,4 +225,43 @@ describe("ServiceLayerClient", () => {
     const requestCall = calls.find((url) => url.includes("/Orders("));
     expect(requestCall).toContain("/Orders(123)");
   });
+
+  it("throws on invalid login credentials without deadlocking", async () => {
+    const calls: string[] = [];
+
+    const mockFetch: typeof fetch = async (input) => {
+      const url = String(input);
+      calls.push(url);
+
+      if (url.endsWith("/Login")) {
+        return new Response(
+          JSON.stringify({
+            error: {
+              code: "-1000",
+              message: { value: "Invalid username or password" }
+            }
+          }),
+          {
+            status: 401,
+            statusText: "Unauthorized",
+            headers: { "content-type": "application/json" }
+          }
+        );
+      }
+
+      return new Response("{}", { status: 200, headers: { "content-type": "application/json" } });
+    };
+
+    const client = new ServiceLayerClient({
+      baseUrl: "https://sapserver:50000/b1s/v2",
+      companyDB: "SBODEMO",
+      userName: "manager",
+      password: "wrong",
+      fetch: mockFetch,
+      retry: { attempts: 1 }
+    });
+
+    await expect(client.login()).rejects.toThrow("Invalid username or password");
+    expect(calls.filter((url) => url.endsWith("/Login"))).toHaveLength(1);
+  });
 });

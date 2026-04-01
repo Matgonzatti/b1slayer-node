@@ -249,7 +249,7 @@ export class ServiceLayerClient {
           throw await ServiceLayerError.fromResponse(response);
         }
 
-        if (response.status === 401) {
+        if (response.status === 401 && !options?.skipAuth) {
           await this.invalidateSession();
           await this.ensureLoggedIn(true);
         }
