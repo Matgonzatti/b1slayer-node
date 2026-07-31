@@ -1,6 +1,6 @@
 {
   "name": "b1slayer-node",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "A lightweight SAP Business One Service Layer client for Node.js and TypeScript",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -42,7 +42,7 @@
     "odata",
     "typescript"
   ],
-  "author": "",
+  "author": "matheusgonzatti",
   "license": "MIT",
   "repository": {
     "type": "git",

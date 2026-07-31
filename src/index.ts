@@ -18,5 +18,5 @@ export type {
   ServiceLayerLoginResponse,
   ServiceLayerPingResponse,
   SessionCacheEntry,
-  SessionStore
+  SessionStore,
 } from "./types.js";

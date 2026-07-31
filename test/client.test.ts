@@ -11,19 +11,23 @@ describe("ServiceLayerClient", () => {
 
       if (url.endsWith("/Login")) {
         return new Response(
-          JSON.stringify({ SessionId: "session-id", Version: "10", SessionTimeout: 30 }),
+          JSON.stringify({
+            SessionId: "session-id",
+            Version: "10",
+            SessionTimeout: 30,
+          }),
           {
             status: 200,
             headers: {
-              "content-type": "application/json"
-            }
-          }
+              "content-type": "application/json",
+            },
+          },
         );
       }
 
       return new Response(JSON.stringify({ value: [{ DocEntry: 1 }] }), {
         status: 200,
-        headers: { "content-type": "application/json" }
+        headers: { "content-type": "application/json" },
       });
     };
 
@@ -32,7 +36,7 @@ describe("ServiceLayerClient", () => {
       companyDB: "SBODEMO",
       userName: "manager",
       password: "12345",
-      fetch: mockFetch
+      fetch: mockFetch,
     });
 
     const result = await client
@@ -75,13 +79,17 @@ describe("ServiceLayerClient", () => {
 
       if (url.endsWith("/Login")) {
         return new Response(
-          JSON.stringify({ SessionId: "session-id", Version: "10", SessionTimeout: 30 }),
+          JSON.stringify({
+            SessionId: "session-id",
+            Version: "10",
+            SessionTimeout: 30,
+          }),
           {
             status: 200,
             headers: {
-              "content-type": "application/json"
-            }
-          }
+              "content-type": "application/json",
+            },
+          },
         );
       }
 
@@ -89,15 +97,15 @@ describe("ServiceLayerClient", () => {
         return new Response(
           JSON.stringify({
             value: [{ DocEntry: 1 }, { DocEntry: 2 }],
-            "@odata.nextLink": "Orders?$skip=2"
+            "@odata.nextLink": "Orders?$skip=2",
           }),
-          { status: 200, headers: { "content-type": "application/json" } }
+          { status: 200, headers: { "content-type": "application/json" } },
         );
       }
 
       return new Response(JSON.stringify({ value: [{ DocEntry: 3 }] }), {
         status: 200,
-        headers: { "content-type": "application/json" }
+        headers: { "content-type": "application/json" },
       });
     };
 
@@ -106,10 +114,13 @@ describe("ServiceLayerClient", () => {
       companyDB: "SBODEMO",
       userName: "manager",
       password: "12345",
-      fetch: mockFetch
+      fetch: mockFetch,
     });
 
-    const result = await client.request("Orders").withPageSize(2).getAll<{ DocEntry: number }>();
+    const result = await client
+      .request("Orders")
+      .withPageSize(2)
+      .getAll<{ DocEntry: number }>();
 
     expect(result).toEqual([{ DocEntry: 1 }, { DocEntry: 2 }, { DocEntry: 3 }]);
   });
@@ -122,13 +133,17 @@ describe("ServiceLayerClient", () => {
 
       if (url.endsWith("/Login")) {
         return new Response(
-          JSON.stringify({ SessionId: "session-id", Version: "10", SessionTimeout: 30 }),
+          JSON.stringify({
+            SessionId: "session-id",
+            Version: "10",
+            SessionTimeout: 30,
+          }),
           {
             status: 200,
             headers: {
-              "content-type": "application/json"
-            }
-          }
+              "content-type": "application/json",
+            },
+          },
         );
       }
 
@@ -143,20 +158,23 @@ describe("ServiceLayerClient", () => {
           "HTTP/1.1 200 OK",
           "Content-Type: application/json",
           "",
-          "{\"value\":[]}",
+          '{"value":[]}',
           "",
           "HTTP/1.1 204 No Content",
           "",
-          ""
+          "",
         ].join("\r\n");
 
         return new Response(responseBody, {
           status: 202,
-          headers: { "content-type": "multipart/mixed" }
+          headers: { "content-type": "multipart/mixed" },
         });
       }
 
-      return new Response("{}", { status: 200, headers: { "content-type": "application/json" } });
+      return new Response("{}", {
+        status: 200,
+        headers: { "content-type": "application/json" },
+      });
     };
 
     const client = new ServiceLayerClient({
@@ -164,13 +182,18 @@ describe("ServiceLayerClient", () => {
       companyDB: "SBODEMO",
       userName: "manager",
       password: "12345",
-      fetch: mockFetch
+      fetch: mockFetch,
     });
 
     const requests = [
       new SLBatchRequest("POST", "BusinessPartners", { CardCode: "C00001" }, 1),
       new SLBatchRequest("GET", "Orders"),
-      new SLBatchRequest("PATCH", "BusinessPartners('C00001')", { CardName: "Updated" }, 2)
+      new SLBatchRequest(
+        "PATCH",
+        "BusinessPartners('C00001')",
+        { CardName: "Updated" },
+        2,
+      ),
     ];
 
     const result = await client.postBatch(requests, true);
@@ -179,9 +202,13 @@ describe("ServiceLayerClient", () => {
     expect(result[1]!.status).toBe(200);
     expect(result[2]!.status).toBe(204);
 
-    const postIndex = batchBody.indexOf("POST /b1s/v2/BusinessPartners HTTP/1.1");
+    const postIndex = batchBody.indexOf(
+      "POST /b1s/v2/BusinessPartners HTTP/1.1",
+    );
     const getIndex = batchBody.indexOf("GET /b1s/v2/Orders HTTP/1.1");
-    const patchIndex = batchBody.indexOf("PATCH /b1s/v2/BusinessPartners('C00001') HTTP/1.1");
+    const patchIndex = batchBody.indexOf(
+      "PATCH /b1s/v2/BusinessPartners('C00001') HTTP/1.1",
+    );
     expect(postIndex).toBeGreaterThanOrEqual(0);
     expect(getIndex).toBeGreaterThan(postIndex);
     expect(patchIndex).toBeGreaterThan(getIndex);
@@ -196,19 +223,23 @@ describe("ServiceLayerClient", () => {
 
       if (url.endsWith("/Login")) {
         return new Response(
-          JSON.stringify({ SessionId: "session-id", Version: "10", SessionTimeout: 30 }),
+          JSON.stringify({
+            SessionId: "session-id",
+            Version: "10",
+            SessionTimeout: 30,
+          }),
           {
             status: 200,
             headers: {
-              "content-type": "application/json"
-            }
-          }
+              "content-type": "application/json",
+            },
+          },
         );
       }
 
       return new Response(JSON.stringify({ DocEntry: 123 }), {
         status: 200,
-        headers: { "content-type": "application/json" }
+        headers: { "content-type": "application/json" },
       });
     };
 
@@ -217,7 +248,7 @@ describe("ServiceLayerClient", () => {
       companyDB: "SBODEMO",
       userName: "manager",
       password: "12345",
-      fetch: mockFetch
+      fetch: mockFetch,
     });
 
     await client.request("Orders", "123").get<{ DocEntry: number }>();
@@ -238,30 +269,35 @@ describe("ServiceLayerClient", () => {
           JSON.stringify({
             error: {
               code: "-1000",
-              message: { value: "Invalid username or password" }
-            }
+              message: { value: "Invalid username or password" },
+            },
           }),
           {
             status: 401,
             statusText: "Unauthorized",
-            headers: { "content-type": "application/json" }
-          }
+            headers: { "content-type": "application/json" },
+          },
         );
       }
 
-      return new Response("{}", { status: 200, headers: { "content-type": "application/json" } });
+      return new Response("{}", {
+        status: 200,
+        headers: { "content-type": "application/json" },
+      });
     };
 
     const client = new ServiceLayerClient({
       baseUrl: "https://sapserver:50000/b1s/v2",
       companyDB: "SBODEMO",
       userName: "manager",
-      password: "wrong",
+      password: "wrong-password",
       fetch: mockFetch,
-      retry: { attempts: 1 }
+      retry: { attempts: 1 },
     });
 
-    await expect(client.login()).rejects.toThrow("Invalid username or password");
+    await expect(client.login()).rejects.toThrow(
+      "Invalid username or password",
+    );
     expect(calls.filter((url) => url.endsWith("/Login"))).toHaveLength(1);
   });
 });

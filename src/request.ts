@@ -14,7 +14,7 @@ export class ServiceLayerRequest {
 
   constructor(
     private readonly client: ServiceLayerClient,
-    private readonly resourcePath: string
+    private readonly resourcePath: string,
   ) {}
 
   filter(filter: string): this {
@@ -113,7 +113,7 @@ export class ServiceLayerRequest {
   }
 
   async getWithInlineCount<T>(
-    unwrapCollection = true
+    unwrapCollection = true,
   ): Promise<{ result: T; count: number }> {
     this.query.set("$inlinecount", "allpages");
     const response = await this.send("GET");
@@ -121,7 +121,7 @@ export class ServiceLayerRequest {
 
     const payloadRecord = payload as Record<string, unknown>;
     const count = parseInlineCount(
-      payloadRecord["odata.count"] ?? payloadRecord["@odata.count"] ?? 0
+      payloadRecord["odata.count"] ?? payloadRecord["@odata.count"] ?? 0,
     );
     const data = getUnwrappedPayload<T>(payload, unwrapCollection);
 
@@ -157,7 +157,7 @@ export class ServiceLayerRequest {
   async getCount(): Promise<number> {
     const countRequest = this.clone();
     const response = await countRequest.send("GET", {
-      pathSuffix: "/$count"
+      pathSuffix: "/$count",
     });
     const content = await response.text();
     return Number.parseInt(content, 10) || 0;
@@ -175,7 +175,7 @@ export class ServiceLayerRequest {
   async postString(data: string): Promise<void> {
     await this.send("POST", {
       rawBody: data,
-      contentType: "application/json"
+      contentType: "application/json",
     });
   }
 
@@ -216,7 +216,7 @@ export class ServiceLayerRequest {
       rawBody?: BodyInit;
       contentType?: string;
       pathSuffix?: string;
-    }
+    },
   ): Promise<Response> {
     const queryString = this.query.toString();
     const path = `${this.resourcePath}${options?.pathSuffix ?? ""}${
@@ -241,21 +241,23 @@ export class ServiceLayerRequest {
       headers.set("content-type", "application/json");
     }
 
-    const timeoutMs = requestTimeout ? Number.parseInt(requestTimeout, 10) : undefined;
+    const timeoutMs = requestTimeout
+      ? Number.parseInt(requestTimeout, 10)
+      : undefined;
 
     return this.client.execute(method, path, {
       headers,
       body,
       timeoutMs,
       allowAnyHttpStatus: this.options.allowAnyHttpStatus,
-      allowedStatusCodes: this.options.allowedStatusCodes
+      allowedStatusCodes: this.options.allowedStatusCodes,
     });
   }
 }
 
 async function parsePayload<T>(
   response: Response,
-  unwrapCollection: boolean
+  unwrapCollection: boolean,
 ): Promise<T> {
   const payload = await parseRawPayload(response);
   return getUnwrappedPayload(payload, unwrapCollection);
@@ -270,7 +272,10 @@ async function parseRawPayload(response: Response): Promise<unknown> {
   return JSON.parse(content) as unknown;
 }
 
-function getUnwrappedPayload<T>(payload: unknown, unwrapCollection: boolean): T {
+function getUnwrappedPayload<T>(
+  payload: unknown,
+  unwrapCollection: boolean,
+): T {
   if (typeof payload === "string") {
     return payload as T;
   }

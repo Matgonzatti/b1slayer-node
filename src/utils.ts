@@ -40,7 +40,11 @@ function isNumericEntityId(value: string): boolean {
   }
 
   const unsigned = trimmed.startsWith("-") ? trimmed.slice(1) : trimmed;
-  if (unsigned.length > 1 && unsigned.startsWith("0") && !unsigned.startsWith("0.")) {
+  if (
+    unsigned.length > 1 &&
+    unsigned.startsWith("0") &&
+    !unsigned.startsWith("0.")
+  ) {
     return false;
   }
 
@@ -87,7 +91,10 @@ export function buildBatchPayload(params: {
 
   let currentChangeSetId: string | null = null;
 
-  const appendRequestPart = (request: BatchRequest, boundaryId: string): void => {
+  const appendRequestPart = (
+    request: BatchRequest,
+    boundaryId: string,
+  ): void => {
     lines.push(`--${boundaryId}`);
     lines.push("Content-Type: application/http; msgtype=request");
     lines.push("content-transfer-encoding: binary");
@@ -111,7 +118,9 @@ export function buildBatchPayload(params: {
       lines.push("Content-Type: application/json; charset=utf-8");
       lines.push("");
       lines.push(
-        typeof request.data === "string" ? request.data : JSON.stringify(request.data)
+        typeof request.data === "string"
+          ? request.data
+          : JSON.stringify(request.data),
       );
     }
 
@@ -126,7 +135,9 @@ export function buildBatchPayload(params: {
       if (!currentChangeSetId) {
         currentChangeSetId = `changeset_${crypto.randomUUID()}`;
         lines.push(`--${boundary}`);
-        lines.push(`Content-Type: multipart/mixed; boundary=${currentChangeSetId}`);
+        lines.push(
+          `Content-Type: multipart/mixed; boundary=${currentChangeSetId}`,
+        );
         lines.push("");
       }
 
@@ -165,7 +176,7 @@ export function buildBatchPayload(params: {
 
   return {
     boundary,
-    body: lines.join("\r\n")
+    body: lines.join("\r\n"),
   };
 }
 
@@ -176,13 +187,18 @@ export function parseBatchResponse(body: string): BatchResponse[] {
   for (const part of parts) {
     const cleaned = `HTTP/${part}`.trim();
     const lineEnd = cleaned.indexOf("\n");
-    const statusLine = (lineEnd < 0 ? cleaned : cleaned.slice(0, lineEnd)).trim();
+    const statusLine = (
+      lineEnd < 0 ? cleaned : cleaned.slice(0, lineEnd)
+    ).trim();
     const statusMatch = /^HTTP\/\d\.\d\s+(\d{3})\s*(.*)$/.exec(statusLine);
     if (!statusMatch) {
       continue;
     }
 
-    const rawRest = (lineEnd < 0 ? "" : cleaned.slice(lineEnd + 1)).replace(/\r/g, "");
+    const rawRest = (lineEnd < 0 ? "" : cleaned.slice(lineEnd + 1)).replace(
+      /\r/g,
+      "",
+    );
     const divider = rawRest.indexOf("\n\n");
     const headerBlock = divider >= 0 ? rawRest.slice(0, divider) : rawRest;
     const bodyBlock = divider >= 0 ? rawRest.slice(divider + 2) : "";
@@ -208,7 +224,7 @@ export function parseBatchResponse(body: string): BatchResponse[] {
       status: Number.parseInt(statusMatch[1] ?? "0", 10),
       statusText: statusMatch[2]?.trim() ?? "",
       headers,
-      body: bodyBlock.replace(/\n--[\s\S]*$/, "").trim()
+      body: bodyBlock.replace(/\n--[\s\S]*$/, "").trim(),
     });
   }
 

@@ -12,7 +12,7 @@ export class SLBatchRequest implements BatchRequest {
     method: string,
     resource: string,
     data?: unknown,
-    contentId?: number
+    contentId?: number,
   ) {
     this.method = method.toUpperCase();
     this.resource = resource;

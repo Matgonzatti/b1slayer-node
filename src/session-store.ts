@@ -22,10 +22,14 @@ export class MemorySessionStore implements SessionStore {
     return entry.value;
   }
 
-  async set(key: string, value: SessionCacheEntry, ttlMs: number): Promise<void> {
+  async set(
+    key: string,
+    value: SessionCacheEntry,
+    ttlMs: number,
+  ): Promise<void> {
     this.map.set(key, {
       value,
-      expiresAt: Date.now() + ttlMs
+      expiresAt: Date.now() + ttlMs,
     });
   }
 

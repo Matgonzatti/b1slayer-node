@@ -25,14 +25,15 @@ export class ServiceLayerError extends Error {
     const body = await response.text();
     const parsed = tryParseErrorPayload(body);
     const message =
-      parsed?.error?.message?.value ?? `${response.status} ${response.statusText}`;
+      parsed?.error?.message?.value ??
+      `${response.status} ${response.statusText}`;
 
     return new ServiceLayerError({
       message,
       status: response.status,
       statusText: response.statusText,
       body,
-      details: parsed?.error
+      details: parsed?.error,
     });
   }
 }
