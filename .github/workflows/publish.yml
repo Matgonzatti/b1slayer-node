@@ -35,7 +35,7 @@ jobs:
         run: |
           if [ -n "${NPM_TOKEN}" ]; then
             export NODE_AUTH_TOKEN="${NPM_TOKEN}"
+            npm publish --access public --provenance
           else
-            unset NODE_AUTH_TOKEN
+            echo "::warning::NPM_TOKEN is not set; skipping npm publish."
           fi
-          npm publish --access public --provenance
